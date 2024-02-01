@@ -33,7 +33,7 @@ public class IminViceScreenPlugin implements FlutterPlugin, ActivityAware, Metho
     private Context _context;
     private MethodChannel viceScreenChannel;
     //用于设置副屏 flutterEngine 需要引入的三方插件库
-    public ArrayList<FlutterPlugin> tripPlugins;
+    ArrayList<FlutterPlugin> tripPlugins;
     //主屏路由
     String mainRouter = "main";
     //副屏路由
@@ -79,7 +79,7 @@ public class IminViceScreenPlugin implements FlutterPlugin, ActivityAware, Metho
                 result.success(true);
                 break;
             //显示副屏
-            case "doubleScreenShow":
+            case "doubleScreenOpen":
                 IminViceScreenProvider.getInstance().showSubDisplay();
                 result.success(true);
                 break;
@@ -138,6 +138,12 @@ public class IminViceScreenPlugin implements FlutterPlugin, ActivityAware, Metho
 
    public static IminViceScreenPlugin getInstance() {
         return Holder.instance;
+    }
+    public void setTripPlugins(ArrayList<FlutterPlugin> tripPlugins) {
+       this.tripPlugins = tripPlugins;
+    }
+    public ArrayList<FlutterPlugin> getTripPlugins() {
+        return tripPlugins;
     }
 
     private static class Holder {

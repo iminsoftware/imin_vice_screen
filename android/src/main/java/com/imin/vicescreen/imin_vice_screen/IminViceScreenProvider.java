@@ -96,9 +96,9 @@ public class IminViceScreenProvider {
             //初始化副屏
             engine = new FlutterEngine(currentActivity);
             //设置副屏engine需要引入的三方插件库
-            Log.d("TAG", "tripPlugins: " + IminViceScreenPlugin.getInstance().tripPlugins);
-            if (IminViceScreenPlugin.getInstance().tripPlugins != null) {
-                 IminViceScreenPlugin.getInstance().tripPlugins.forEach(plugin -> {
+            Log.d("TAG", "tripPlugins: " + IminViceScreenPlugin.getInstance().getTripPlugins());
+            if (IminViceScreenPlugin.getInstance().getTripPlugins() != null) {
+                 IminViceScreenPlugin.getInstance().getTripPlugins().forEach(plugin -> {
                       if(engine.getPlugins() != null) {
                           engine.getPlugins().add(plugin);
                       }
@@ -195,7 +195,8 @@ public class IminViceScreenProvider {
                         if (checkOverlayPermission()) {
                             if (presentation.getWindow() != null) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    presentation.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+                                    // presentation.getWindow().setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY);
+                                    presentation.getWindow().setType(2037);
                                 } else {
                                     Log.d("TAG", "configSecondDisplay" + "TYPE_SYSTEM_ALERT");
                                     // presentation.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);

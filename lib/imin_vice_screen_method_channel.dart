@@ -49,7 +49,7 @@ class MethodChannelIminViceScreen extends IminViceScreenPlatform {
   ///打开副屏
   @override
   Future<void> doubleScreenOpen() async {
-    await methodChannel.invokeMethod<void>('doubleScreenShow');
+    await methodChannel.invokeMethod<void>('doubleScreenOpen');
   }
 
   ///关闭副屏

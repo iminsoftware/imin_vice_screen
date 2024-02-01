@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:imin_vice_screen/imin_vice_screen.dart';
+import 'package:video_player/video_player.dart';
 
 class SubHome extends StatefulWidget {
   const SubHome({super.key});
@@ -13,15 +14,26 @@ class SubHome extends StatefulWidget {
 class _SubHomeState extends State<SubHome> {
   final _iminViceScreenPlugin = IminViceScreen();
   String receiveData = 'null';
+  late VideoPlayerController _controller;
   @override
   void initState() {
     super.initState();
+    _controller = VideoPlayerController.networkUrl(Uri.parse(
+        "https://video-js.51miz.com/preview/video/00/00/18/15/V-181575-C219937A.mp4"))
+      ..initialize().then((value) {
+        setState(() {
+          _controller.play();
+          _controller.setLooping(true);
+        });
+      });
     if (!mounted) return;
     _iminViceScreenPlugin.viceStream.listen((event) {
-      setState(() {
-        receiveData = event.arguments.toString();
-      });
+      debugPrint('viceStream: ${event.method}');
+        setState(() {
+          receiveData = event.arguments.toString();
+        });
     });
+
     Future.delayed(const Duration(seconds: 5), sendMsgToMainScreen);
   }
 
@@ -33,23 +45,35 @@ class _SubHomeState extends State<SubHome> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('副屏'),
-      ),
-      body: Center(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('接收到的主屏数据为：$receiveData'),
-          const SizedBox(height: 50),
-          ElevatedButton(
-            onPressed: sendMsgToMainScreen,
-            child: const Text('发送数据给主屏'),
-          ),
-        ],
-      )),
-    );
+    return receiveData != 'null'
+        ? Scaffold(
+            appBar: AppBar(
+              title: const Text('Secondary screen'),
+            ),
+            body: Center(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('The received home screen data is:$receiveData'),
+                const SizedBox(height: 50),
+                ElevatedButton(
+                  onPressed: sendMsgToMainScreen,
+                  child: const Text('Send data to the home screen'),
+                ),
+              ],
+            )),
+          )
+        : Center(
+            child: _controller.value.isInitialized
+                ? AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  )
+                : Container(
+                    width: 100,
+                    height: 100,
+                    color: Colors.blue,
+                  ));
   }
 }

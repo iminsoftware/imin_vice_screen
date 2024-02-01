@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
           return MaterialPageRoute<void>(
               settings: routeSettings,
               builder: (BuildContext context) {
+                debugPrint('onGenerateRoute: ${routeSettings.name}');
                 if (routeSettings.name == 'viceMain') {
                   switch (routeSettings.name) {
                     case SubHome.routeName:

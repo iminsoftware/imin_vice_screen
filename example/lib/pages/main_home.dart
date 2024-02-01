@@ -22,7 +22,7 @@ class _MainHomeState extends State<MainHome> {
       checkOverlayPermission();
     });
     _iminViceScreenPlugin.mainStream.listen((event) {
-      debugPrint('MainHome event: ${event.arguments}');
+      // debugPrint('MainHome event: ${event.method}');
       setState(() {
         receiveData = event.arguments.toString();
       });
@@ -48,25 +48,28 @@ class _MainHomeState extends State<MainHome> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          content: const Text('已检测到副屏，将副屏设置为持久窗口需开启权限，是否设置'),
+          content: const Text('The secondary screen has been detected, and the secondary screen should be set as a persistent window to open the permission. Is it set?'),
           actions: [
             TextButton(
               onPressed: () {
-                // Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
-              child: const Text('否'),
+              child: const Text('No'),
             ),
             TextButton(
-              onPressed: () async {
-                final hasPermission = await _iminViceScreenPlugin.checkOverlayPermission();
-                if (hasPermission != null && !hasPermission) {
-                  _iminViceScreenPlugin.requestOverlayPermission();
-                } else {
-                  _iminViceScreenPlugin.doubleScreenOpen();
-                  // Navigator.of(context).pop();
-                }
+              onPressed: () {
+                _iminViceScreenPlugin
+                    .checkOverlayPermission()
+                    .then((hasPermission) {
+                  if (hasPermission != null && !hasPermission) {
+                    _iminViceScreenPlugin.requestOverlayPermission();
+                  } else {
+                    _iminViceScreenPlugin.doubleScreenOpen();
+                    Navigator.of(context).pop();
+                  }
+                });
               },
-              child: const Text('是'),
+              child: const Text('Yes'),
             ),
           ],
         );
@@ -88,32 +91,32 @@ class _MainHomeState extends State<MainHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('主屏'),
+        title: const Text('Home screen'),
       ),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('接收到的副屏数据为：$receiveData'),
+            Text('The received secondary screen data are:$receiveData'),
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: sendMsgToSubScreen,
-              child: const Text('发送数据给副屏'),
+              child: const Text('Send data to the secondary screen'),
             ),
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () async {
                 await _iminViceScreenPlugin.doubleScreenOpen();
               },
-              child: const Text('开启副屏'),
+              child: const Text('Enable secondary screen'),
             ),
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () async {
                 await _iminViceScreenPlugin.doubleScreenCancel();
               },
-              child: const Text('关闭副屏'),
+              child: const Text('Close the secondary screen'),
             ),
           ],
         ),
