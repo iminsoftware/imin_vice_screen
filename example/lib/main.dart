@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pages/lcd_home.dart';
 import 'pages/main_home.dart';
 import 'pages/sub_home.dart';
 
@@ -6,8 +7,18 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool hasSubSreen = false;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +28,8 @@ class MyApp extends StatelessWidget {
           return MaterialPageRoute<void>(
               settings: routeSettings,
               builder: (BuildContext context) {
-                debugPrint('onGenerateRoute: ${routeSettings.name}');
                 if (routeSettings.name == 'viceMain') {
+                  hasSubSreen = true;
                   switch (routeSettings.name) {
                     case SubHome.routeName:
                     default:
@@ -28,7 +39,7 @@ class MyApp extends StatelessWidget {
                   switch (routeSettings.name) {
                     case MainHome.routeName:
                     default:
-                      return const MainHome();
+                      return hasSubSreen ? const MainHome() : const LCDHome();
                   }
                 }
               });

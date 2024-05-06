@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:imin_vice_screen/style.dart';
 
+import 'enums.dart';
 import 'imin_vice_screen_platform_interface.dart';
 
 class IminViceScreen {
@@ -51,5 +53,33 @@ class IminViceScreen {
       {Map<String, dynamic>? params}) {
     return IminViceScreenPlatform.instance
         .sendMsgToMainScreen(method, params: params);
+  }
+
+  Future<void> sendLCDCommand(LCDCommand command) {
+    return IminViceScreenPlatform.instance.sendLCDCommand(command);
+  }
+
+  Future<void> sendLCDString(String string) {
+    return IminViceScreenPlatform.instance.sendLCDString(string);
+  }
+
+  Future<void> sendLCDMultiString(
+      {required List<String> contents, required List<int> aligns}) {
+    return IminViceScreenPlatform.instance
+        .sendLCDMultiString(contents: contents, aligns: aligns);
+  }
+
+  Future<void> sendLCDDoubleString(
+      {required String topText, required String bottomText}) {
+    return IminViceScreenPlatform.instance
+        .sendLCDDoubleString(topText: topText, bottomText: bottomText);
+  }
+
+  Future<void> sendLCDBitmap(dynamic byte, {IminPictureStyle? pictureStyle}) {
+    return IminViceScreenPlatform.instance.sendLCDBitmap(byte, pictureStyle: pictureStyle);
+  }
+
+  Future<void> setTextSize(int size) {
+    return IminViceScreenPlatform.instance.sendLCDBitmap(size);
   }
 }

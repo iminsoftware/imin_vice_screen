@@ -1,3 +1,8 @@
+
+## 1.0.0
+
+* added: Add LCD vice screen related methods
+
 ## 0.0.1
 
-* TODO: Describe initial release.
+* added: Add secondary screen related methods

@@ -1,8 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:imin_vice_screen/style.dart';
 
+import 'enums.dart';
 import 'imin_vice_screen_platform_interface.dart';
+import 'package:logger/logger.dart';
+
+var logger = Logger();
 
 /// An implementation of [IminViceScreenPlatform] that uses method channels.
 class MethodChannelIminViceScreen extends IminViceScreenPlatform {
@@ -70,5 +76,68 @@ class MethodChannelIminViceScreen extends IminViceScreenPlatform {
   Future<void> sendMsgToMainScreen(String method,
       {Map<String, dynamic>? params}) async {
     await viceMethodChannel.invokeMethod<void>(method, params ?? {});
+  }
+
+  @override
+  Future<void> sendLCDCommand(LCDCommand command) async {
+    Map<String, dynamic> arguments = <String, dynamic>{
+      "command": command.state,
+    };
+    await methodChannel.invokeMethod<void>('sendLCDCommand', arguments);
+  }
+
+  @override
+  Future<void> sendLCDString(String string) async {
+    Map<String, dynamic> arguments = <String, dynamic>{
+      "content": string,
+    };
+    await methodChannel.invokeMethod<void>('sendLCDString', arguments);
+  }
+
+  @override
+  Future<void> sendLCDMultiString(
+      {required List<String> contents, required List<int> aligns}) async {
+    Map<String, dynamic> arguments = <String, dynamic>{
+      "contents": json.encode(contents),
+      "aligns": json.encode(aligns),
+    };
+    logger.d("sendLCDMultiString: $arguments");
+    await methodChannel.invokeMethod<void>('sendLCDMultiString', arguments);
+  }
+
+  @override
+  Future<void> sendLCDDoubleString(
+      {required String topText, required String bottomText}) async {
+    Map<String, dynamic> arguments = <String, dynamic>{
+      "topText": topText,
+      "bottomText": bottomText
+    };
+    await methodChannel.invokeMethod<void>('sendLCDDoubleString', arguments);
+  }
+
+  @override
+  Future<void> sendLCDBitmap(dynamic byte,
+      {IminPictureStyle? pictureStyle}) async {
+    Map<String, dynamic> arguments = <String, dynamic>{};
+    if (pictureStyle != null) {
+      if (pictureStyle.width != null && pictureStyle.height != null) {
+        arguments.putIfAbsent("width", () => pictureStyle.width);
+        arguments.putIfAbsent("height", () => pictureStyle.height);
+      }
+    }
+    arguments.putIfAbsent("bitmap", () => byte);
+    if (byte is Uint8List) {
+      await methodChannel.invokeMethod<void>('sendLCDBitmap', arguments);
+    } else {
+      await methodChannel.invokeMethod<void>('sendLCDBitmapToUrl', arguments);
+    }
+  }
+
+  @override
+  Future<void> setTextSize(int size) async {
+    Map<String, dynamic> arguments = <String, dynamic>{
+      "size": size,
+    };
+     await methodChannel.invokeMethod<void>('setTextSize', arguments);
   }
 }

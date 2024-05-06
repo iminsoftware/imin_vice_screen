@@ -113,3 +113,102 @@ void viceScreenMain() {
    <!-- 是否在初始化时自动显示副屏 -->
   <bool name="autoShowSubScreenWhenInit">true</bool> 
 ```
+
+## 4. LCD Vice screen display
+  
+### 1. LCD INIT
+
+  -- sendLCDCommand  
+
+```dart
+import 'package:imin_vice_screen/enums.dart';
+import 'package:imin_vice_screen/imin_vice_screen.dart';
+  final iminViceScreenPlugin = IminViceScreen();
+  await iminViceScreenPlugin.sendLCDCommand(LCDCommand.initLCD); // init  LCD
+  await iminViceScreenPlugin.sendLCDCommand(LCDCommand.wakeLCD); // wake  LCD
+  await iminViceScreenPlugin.sendLCDCommand(LCDCommand.sleepLCD); // sleep  LCD
+  await iminViceScreenPlugin.sendLCDCommand(LCDCommand.cleanScreenLCD); // clean Screen
+```
+### 2.  Send a string for display on the secondary screen
+
+  -- sendLCDString  
+
+```dart
+import 'package:imin_vice_screen/imin_vice_screen.dart';
+  final iminViceScreenPlugin = IminViceScreen();
+  await iminViceScreenPlugin.sendLCDString('hello world');
+```
+
+### 3.  Send a string for display on the secondary screen
+
+  -- sendLCDString  
+     -- parameter:
+        --- String content
+
+```dart
+import 'package:imin_vice_screen/imin_vice_screen.dart';
+  final iminViceScreenPlugin = IminViceScreen();
+  await iminViceScreenPlugin.sendLCDString('hello world');
+```
+  
+### 4.  Sends a multi-line subscreen content string
+
+  -- sendLCDMultiString  
+     -- parameter:
+        -- String[] contents
+        -- int[]  aligns
+
+```dart
+import 'package:imin_vice_screen/imin_vice_screen.dart';
+  final iminViceScreenPlugin = IminViceScreen();
+  await iminViceScreenPlugin.sendLCDMultiString(contents: ["سعيد بلقائك", "Des", "Hi"], aligns: [0, 1, 2]);
+```
+
+### 4.  Sends a two-line subscreen content string
+
+  -- sendLCDDoubleString  
+     -- parameter:
+        -- String topText
+        -- String  bottomText
+
+```dart
+import 'package:imin_vice_screen/imin_vice_screen.dart';
+  final iminViceScreenPlugin = IminViceScreen();
+  await iminViceScreenPlugin.sendLCDDoubleString(
+                    topText: 'Top  Cotent', bottomText: 'Bottom  Cotent');
+```
+
+
+### 4.  Send pictures to display on the secondary screen
+
+  -- sendLCDBitmap  
+     -- parameter:
+        -- dynamic byte  -> img URL Or  Byte
+
+```dart
+import 'package:imin_vice_screen/imin_vice_screen.dart';
+  final iminViceScreenPlugin = IminViceScreen();
+  // use Byte
+    Uint8List byte = await readFileBytes('assets/images/logo.png');
+     await iminViceScreenPlugin.sendLCDBitmap(byte);
+  
+  // or use URL
+  await iminViceScreenPlugin.sendLCDBitmap(
+            'https://oss-sg.imin.sg/web/iMinPartner2/images/logo.png',
+            pictureStyle: IminPictureStyle(
+              width: 240,
+              height: 320,
+            ));
+```
+  
+### 4. Set font size
+
+  -- setTextSize  
+      -- parameter:
+        -- int size  -> font size
+
+```dart
+import 'package:imin_vice_screen/imin_vice_screen.dart';
+  final iminViceScreenPlugin = IminViceScreen();
+  await iminViceScreenPlugin.setTextSize(15);
+```

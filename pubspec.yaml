@@ -1,7 +1,7 @@
 name: imin_vice_screen
-description: A new Flutter plugin project.
-version: 0.0.1
-homepage:
+description: flutter plugin for iMin or smart devices with secondary screens
+version: 1.0.0
+homepage: https://github.com/iminsoftware/imin_vice_screen
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
+  logger: ^1.1.0
 
 dev_dependencies:
   flutter_test:

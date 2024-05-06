@@ -3,12 +3,10 @@ package com.imin.vicescreen.imin_vice_screen;
 import android.app.Presentation;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Build;
 import android.view.Display;
 
 import io.flutter.embedding.android.FlutterView;
 import io.flutter.embedding.engine.FlutterEngine;
-
 
 class IminViceScreenPresentation extends Presentation {
     private Context outerContext;

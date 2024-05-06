@@ -10,6 +10,18 @@ import android.provider.Settings;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+
+import com.imin.image.ILcdManager;
+import com.imin.image.StringUtils;
+
 import io.flutter.Log;
 import io.flutter.embedding.engine.dart.DartExecutor;
 
@@ -20,6 +32,10 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+
+import org.json.JSONArray;
+
+import java.util.ArrayList;
 
 /**
  * IminViceScreenPlugin
@@ -32,6 +48,7 @@ public class IminViceScreenPlugin implements FlutterPlugin, ActivityAware, Metho
     private MethodChannel channel;
     private Context _context;
     private MethodChannel viceScreenChannel;
+    private static final String TAG = "IminViceScreenPlugin";
     //用于设置副屏 flutterEngine 需要引入的三方插件库
     ArrayList<FlutterPlugin> tripPlugins;
     //主屏路由
@@ -87,9 +104,91 @@ public class IminViceScreenPlugin implements FlutterPlugin, ActivityAware, Metho
                 IminViceScreenProvider.getInstance().closeSubDisplay();
                 result.success(true);
                 break;
+            case "sendLCDCommand":
+                int command = call.argument("command");
+                ILcdManager.getInstance(_context).sendLCDCommand(command);
+                result.success(true);
+                break;
+            case "sendLCDString":
+                String content = call.argument("content");
+                try {
+                    ILcdManager.getInstance(_context).sendLCDString(content);
+                    result.success(true);
+                } catch (Exception err) {
+                    Log.e(TAG + "sendLCDString", err.getMessage());
+                }
+                break;
+            case "sendLCDMultiString":
+                String contentsStr = call.argument("contents");
+                String alignsStr = call.argument("aligns");
+                try {
+                    JSONArray jsonContents = new JSONArray(contentsStr);
+                    JSONArray jsonAligns = new JSONArray(alignsStr);
+                    String[] contents = new String[jsonContents.length()];
+                    int[] aligns = new int[jsonAligns.length()];
+                    for (int i = 0; i < jsonContents.length(); i++) {
+                        contents[i] = jsonContents.getString(i);
+                    }
+                    for (int i = 0; i < jsonAligns.length(); i++) {
+                        aligns[i] = jsonAligns.getInt(i);
+                    }
+                    ILcdManager.getInstance(_context).sendLCDMultiString(contents, aligns);
+                    result.success(true);
+                } catch (Exception err) {
+                    Log.e(TAG + "sendLCDMultiString", err.getMessage());
+                }
+                break;
+            case "sendLCDDoubleString":
+                String topText = call.argument("topText");
+                String bottomText = call.argument("bottomText");
+                try {
+                    ILcdManager.getInstance(_context).sendLCDDoubleString(topText, bottomText);
+                    result.success(true);
+                } catch (Exception err) {
+                    Log.e(TAG + "sendLCDDoubleString", err.getMessage());
+                }
+                break;
+            case "sendLCDBitmap":
+                try {
+                    byte[] bytes = call.argument("bitmap");
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    ILcdManager.getInstance(_context).sendLCDBitmap(bitmap);
+                    result.success(true);
+                } catch (Exception err) {
+                    Log.e(TAG + "sendLCDBitmap", err.getMessage());
+                }
+                break;
+            case "sendLCDBitmapToUrl":
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (call.argument("height") != null && call.argument("width") != null) {
+                                int imageWidth = call.argument("width");
+                                int imageHeight = call.argument("height");
+                                String img = call.argument("bitmap");
+                                Bitmap image = Glide.with(_context).asBitmap().load(img).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).submit(imageWidth, imageHeight).get();
+                                ILcdManager.getInstance(_context).sendLCDBitmap(image);
+                            } else {
+                                String img = call.argument("bitmap");
+                                Bitmap image = Glide.with(_context).asBitmap().load(img).diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true).submit().get();
+                                ILcdManager.getInstance(_context).sendLCDBitmap(image);  
+                            }
+                            result.success(true);
+                        } catch (Exception err) {
+                            Log.e(TAG, "sendLCDBitmapToUrl:" + err.getMessage());
+                        }
+                    }
+                }).start();
+                break;
+            case "setTextSize":
+                int size = call.argument("size");
+                ILcdManager.getInstance(_context).setTextSize(size);  
+                result.success(true);
+                break;
             default:
                 //主屏通过mainChannel将事件和参数传递给副屏viceScreenChannel
-                Log.d("TAG", "onMethodCall: " + viceScreenChannel);
+                Log.d(TAG, "onMethodCall: " + viceScreenChannel);
                 if (viceScreenChannel != null) {
                     viceScreenChannel.invokeMethod(call.method, call.arguments);
                 }
@@ -106,17 +205,15 @@ public class IminViceScreenPlugin implements FlutterPlugin, ActivityAware, Metho
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onAttachedToActivity(ActivityPluginBinding binding) {
-        IminViceScreenProvider.getInstance().setFlutterSubCallback(
-                new IFlutterSubCallback() {
-                    @Override
-                    public void onSubFlutterEngineCreated() {
-                        //副屏 engine 初始化后，将副屏事件进行分发
-                        if (IminViceScreenProvider.getInstance().engine != null) {
-                            onCreateViceChannel(IminViceScreenProvider.getInstance().engine.getDartExecutor());
-                        }
-                    }
+        IminViceScreenProvider.getInstance().setFlutterSubCallback(new IFlutterSubCallback() {
+            @Override
+            public void onSubFlutterEngineCreated() {
+                //副屏 engine 初始化后，将副屏事件进行分发
+                if (IminViceScreenProvider.getInstance().engine != null) {
+                    onCreateViceChannel(IminViceScreenProvider.getInstance().engine.getDartExecutor());
                 }
-        );
+            }
+        });
         boolean autoShowSubScreenWhenInit = _context.getResources().getBoolean(R.bool.autoShowSubScreenWhenInit);
         IminViceScreenProvider.getInstance().doInit(binding.getActivity(), autoShowSubScreenWhenInit);
     }
@@ -136,12 +233,14 @@ public class IminViceScreenPlugin implements FlutterPlugin, ActivityAware, Metho
         IminViceScreenProvider.getInstance().onDispose();
     }
 
-   public static IminViceScreenPlugin getInstance() {
+    public static IminViceScreenPlugin getInstance() {
         return Holder.instance;
     }
+
     public void setTripPlugins(ArrayList<FlutterPlugin> tripPlugins) {
-       this.tripPlugins = tripPlugins;
+        this.tripPlugins = tripPlugins;
     }
+
     public ArrayList<FlutterPlugin> getTripPlugins() {
         return tripPlugins;
     }

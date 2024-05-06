@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:imin_vice_screen/style.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import 'enums.dart';
 import 'imin_vice_screen_method_channel.dart';
 
 abstract class IminViceScreenPlatform extends PlatformInterface {
@@ -26,7 +28,7 @@ abstract class IminViceScreenPlatform extends PlatformInterface {
     _instance = instance;
   }
 
- Future<bool?> isSupportMultipleScreen() {
+  Future<bool?> isSupportMultipleScreen() {
     throw UnimplementedError(
         'isSupportMultipleScreen() has not been implemented.');
   }
@@ -41,8 +43,10 @@ abstract class IminViceScreenPlatform extends PlatformInterface {
   }
 
   Future<void> requestOverlayPermission() {
-    throw UnimplementedError('requestOverlayPermission() has not been implemented.');
+    throw UnimplementedError(
+        'requestOverlayPermission() has not been implemented.');
   }
+
   Future<void> doubleScreenOpen() {
     throw UnimplementedError('doubleScreenOpen() has not been implemented.');
   }
@@ -63,5 +67,29 @@ abstract class IminViceScreenPlatform extends PlatformInterface {
 
   void initMainChannel(StreamController<MethodCall>? mainStreamController) {
     throw UnimplementedError('initMainChannel() has not been implemented.');
+  }
+
+  Future<void> sendLCDCommand(LCDCommand command) {
+    throw UnimplementedError('sendLCDCommand() has not been implemented.');
+  }
+
+  Future<void> sendLCDString(String string) {
+    throw UnimplementedError('sendLCDString() has not been implemented.');
+  }
+
+  Future<void> sendLCDMultiString(
+      {required List<String> contents, required List<int> aligns}) {
+    throw UnimplementedError('sendLCDMultiString() has not been implemented.');
+  }
+
+  Future<void> sendLCDDoubleString(
+      {required String topText, required String bottomText}) {
+    throw UnimplementedError('sendLCDDoubleString() has not been implemented.');
+  }
+  Future<void> sendLCDBitmap(dynamic byte, {IminPictureStyle? pictureStyle}) {
+    throw UnimplementedError('sendLCDBitmap() has not been implemented.');
+  }
+  Future<void> setTextSize(int size) {
+    throw UnimplementedError('setTextSize() has not been implemented.');
   }
 }
