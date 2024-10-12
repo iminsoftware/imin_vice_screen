@@ -14,7 +14,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool hasSubSreen = false;
   @override
   void initState() {
     super.initState();
@@ -28,20 +27,15 @@ class _MyAppState extends State<MyApp> {
           return MaterialPageRoute<void>(
               settings: routeSettings,
               builder: (BuildContext context) {
-                if (routeSettings.name == 'viceMain') {
-                  hasSubSreen = true;
-                  switch (routeSettings.name) {
-                    case SubHome.routeName:
-                    default:
-                      return const SubHome();
-                  }
-                } else {
-                  switch (routeSettings.name) {
-                    case MainHome.routeName:
-                    default:
-                      return hasSubSreen ? const MainHome() : const LCDHome();
-                  }
-                }
+                // D4 使用的副屏
+               if (routeSettings.name == 'viceMain') {
+                 return const SubHome();
+               } else {
+                 return const MainHome();
+               } 
+
+               // Falcon 1 使用的迷你副屏
+              // return const LCDHome();
               });
         });
   }

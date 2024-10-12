@@ -19,7 +19,7 @@ class _SubHomeState extends State<SubHome> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(Uri.parse(
-        "https://video-js.51miz.com/preview/video/00/00/18/15/V-181575-C219937A.mp4"))
+        "https://img.tukuppt.com/video_show/2405179/00/01/69/5b486eba157fd.mp4"))
       ..initialize().then((value) {
         setState(() {
           _controller.play();
