@@ -35,6 +35,8 @@ extensions.configure<com.android.build.gradle.LibraryExtension>("android") {
     }
 
     testOptions {
+        // onMethodCall logs through android.util.Log, which is not stubbed on the JVM.
+        unitTests.isReturnDefaultValues = true
         unitTests.all {
             it.testLogging {
                 events("passed", "skipped", "failed", "standardOut", "standardError")
@@ -47,9 +49,7 @@ extensions.configure<com.android.build.gradle.LibraryExtension>("android") {
 
 dependencies {
     "testImplementation"("junit:junit:4.13.2")
-    "testImplementation"("org.mockito:mockito-core:5.14.2")
+    "testImplementation"("org.mockito:mockito-core:5.23.0")
     "implementation"(files("libs/freeimagelibrary-5-v1.5_2607160235.jar"))
-    "implementation"("androidx.multidex:multidex:2.0.1")
     "implementation"("com.github.bumptech.glide:glide:4.16.0")
-    "annotationProcessor"("com.github.bumptech.glide:compiler:4.16.0")
 }

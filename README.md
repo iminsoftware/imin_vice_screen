@@ -214,3 +214,18 @@ import 'package:imin_vice_screen/imin_vice_screen.dart';
   final iminViceScreenPlugin = IminViceScreen();
   await iminViceScreenPlugin.setTextSize(15);
 ```
+
+## Credits
+
+Contributed and maintained by **[Menumiz][menumiz]**.
+
+<p align="left">
+  <a href="https://menumiz.com/?utm_source=imin_vice_screen&utm_medium=readme&utm_campaign=oss-credit">
+    <img width="240"
+         title="Menumiz — the all-in-one restaurant POS with integrated AI, QR self-ordering, digital menus, and payments"
+         alt="Menumiz — best restaurant POS system: affordable cloud restaurant POS &amp; ePOS for small restaurants and cafes, with QR code self-ordering, online ordering, digital menu, e-Waiter AI ordering, table-side ordering, contactless payment, and restaurant management software"
+         src="https://menumizpublic.blob.core.windows.net/email/menumiz-transparent-maroon logo.png"/>
+  </a>
+</p>
+
+[menumiz]: https://menumiz.com/?utm_source=imin_vice_screen&utm_medium=readme&utm_campaign=oss-credit

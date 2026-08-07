@@ -12,6 +12,7 @@ class IminViceScreenPresentation extends Presentation {
     private Context outerContext;
     private Display display;
     private FlutterEngine engine;
+    private FlutterView flutterView;
 
     public IminViceScreenPresentation(Context outerContext, Display display, FlutterEngine engine) {
         super(outerContext, display);
@@ -25,7 +26,7 @@ class IminViceScreenPresentation extends Presentation {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.flutter_presentation_view);
-        FlutterView flutterView = findViewById(R.id.flutter_presentation_view);
+        flutterView = findViewById(R.id.flutter_presentation_view);
         flutterView.attachToFlutterEngine(engine);
     }
 
@@ -37,7 +38,11 @@ class IminViceScreenPresentation extends Presentation {
 
     @Override
     public void dismiss() {
-        engine.getLifecycleChannel().appIsDetached();
+        engine.getLifecycleChannel().appIsPaused();
+        if (flutterView != null) {
+            flutterView.detachFromFlutterEngine();
+            flutterView = null;
+        }
         super.dismiss();
     }
 }

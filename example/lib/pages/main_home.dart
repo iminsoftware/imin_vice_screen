@@ -13,16 +13,15 @@ class MainHome extends StatefulWidget {
 class _MainHomeState extends State<MainHome> {
   final _iminViceScreenPlugin = IminViceScreen();
   String receiveData = 'null';
+  bool _secondaryOpen = false;
 
   @override
   void initState() {
     super.initState();
-    if (!mounted) return;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       checkOverlayPermission();
     });
     _iminViceScreenPlugin.mainStream.listen((event) {
-      // debugPrint('MainHome event: ${event.method}');
       setState(() {
         receiveData = event.arguments.toString();
       });
@@ -66,7 +65,7 @@ class _MainHomeState extends State<MainHome> {
                   if (hasPermission != null && !hasPermission) {
                     _iminViceScreenPlugin.requestOverlayPermission();
                   } else {
-                    _iminViceScreenPlugin.doubleScreenOpen();
+                    _openSecondary();
                     navigator.pop();
                   }
                 });
@@ -89,6 +88,16 @@ class _MainHomeState extends State<MainHome> {
     }
   }
 
+  Future<void> _openSecondary() async {
+    await _iminViceScreenPlugin.doubleScreenOpen();
+    setState(() => _secondaryOpen = true);
+  }
+
+  Future<void> _closeSecondary() async {
+    await _iminViceScreenPlugin.doubleScreenCancel();
+    setState(() => _secondaryOpen = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,26 +109,21 @@ class _MainHomeState extends State<MainHome> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('The received secondary screen data are:$receiveData'),
+            Text('Secondary screen: ${_secondaryOpen ? 'OPEN' : 'CLOSED'}'),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: _secondaryOpen ? _closeSecondary : _openSecondary,
+              child: Text(_secondaryOpen
+                  ? 'Close the secondary screen'
+                  : 'Enable secondary screen'),
+            ),
             const SizedBox(height: 30),
             ElevatedButton(
               onPressed: sendMsgToSubScreen,
               child: const Text('Send data to the secondary screen'),
             ),
             const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () async {
-                await _iminViceScreenPlugin.doubleScreenOpen();
-              },
-              child: const Text('Enable secondary screen'),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () async {
-                await _iminViceScreenPlugin.doubleScreenCancel();
-              },
-              child: const Text('Close the secondary screen'),
-            ),
+            Text('The received secondary screen data are:$receiveData'),
           ],
         ),
       ),
